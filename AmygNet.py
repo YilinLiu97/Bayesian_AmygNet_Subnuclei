@@ -5,15 +5,12 @@ from niftynet.layer.convolution import ConvolutionalLayer
 from niftynet.layer.crop import CropLayer
 from niftynet.layer.dilatedcontext import DilatedTensor
 from niftynet.layer.elementwise import ElementwiseLayer
-from niftynet.layer.upsample import UpSampleLayer
 from niftynet.network.base_net import BaseNet
 
 
-class dilated_deepmedic(BaseNet):
+class AmygNet(BaseNet):
     """
-    reimplementation of DeepMedic:
-        Kamnitsas et al., "Efficient multi-scale 3D CNN with fully connected
-        CRF for accurate brain lesion segmentation", MedIA '17
+    implementation 
     """
 
     def __init__(self,
@@ -23,9 +20,9 @@ class dilated_deepmedic(BaseNet):
                  b_initializer=None,
                  b_regularizer=None,
                  acti_func='prelu',
-                 name="dilated_deepmedic"):
+                 name="AmygNet"):
 
-        super(dilated_deepmedic, self).__init__(
+        super(AmygNet, self).__init__(
             num_classes=num_classes,
             w_initializer=w_initializer,
             w_regularizer=w_regularizer,
@@ -45,23 +42,8 @@ class dilated_deepmedic(BaseNet):
         self.layers_dilation8 = [40]
 
     def layer_op(self, images, is_training, keep_prob=0.5, layer_id=-1, **unused_kwargs):
-        # image_size is defined as the largest context, then:
-        #   downsampled path size: image_size / d_factor
-        #   downsampled path output: image_size / d_factor - 16
-                # to make sure same size of feature maps from both pathways:
-        #   normal path size: (image_size / d_factor - 16) * d_factor + 16
-        #   normal path output: (image_size / d_factor - 16) * d_factor
 
-        # where 16 is fixed by the receptive field of conv layers
-        # TODO: make sure label_size = image_size/d_factor - 16
-
-        # image_size has to be an odd number and divisible by 3 and
-        # smaller than the smallest image size of the input volumes
-
-        # label_size should be (image_size/d_factor - 16) * d_factor
-
-
-        # crop 26x26x26 from 56x56x56
+        # crop 27x27x27 from 59x59x59
         crop_op = CropLayer(border=self.crop_diff, name='cropping_input')
         normal_path = crop_op(images)
         print(crop_op)
@@ -213,12 +195,6 @@ class dilated_deepmedic(BaseNet):
             print(conv_path_1)
             
 
-
-        # upsampling the downsampled pathway
-      #  dilated_path = UpSampleLayer('REPLICATE',
-       #                               kernel_size=2,
-        #                              stride=2)(dilated_path)
-       # print(UpSampleLayer)
 
         # concatenate both pathways
         output_tensor = ElementwiseLayer('CONCAT')(normal_path, dilated_path)
