@@ -9,16 +9,6 @@ import nibabel as nib
 import tensorflow as tf
 
 
-# ----- Loader for nifti files ------ #
-def load_nii (imageFileName, printFileNames) :
-    if printFileNames == True:
-        print (" ... Loading file: {}".format(imageFileName))
-
-    img_proxy = nib.load(imageFileName)
-    imageData = img_proxy.get_data()
-
-    return (imageData,img_proxy)
-
 ## ========  For Nifti files  ========= ##
 def saveImageAsNifti(imageToSave,
                      imageName,
@@ -34,11 +24,6 @@ def saveImageAsNifti(imageToSave,
     niiToSave = nib.Nifti1Image(imageToSave,image_proxy.affine)
     niiToSave.set_data_dtype(imageType)
     print('imageType: ', imageType)
-
-    dim = len(imageToSave.shape)
-    zooms = list(image_proxy.header.get_zooms()[:dim])
-    if len(zooms) < dim :
-        zooms = zooms + [1.0]*(dim-len(zooms))
 
     niiToSave.header.set_zooms(zooms)
     nib.save(niiToSave, imageName)
@@ -70,7 +55,7 @@ def do(argv):
     T = len(prob_files)
     print('Total number  of files: ',T)
 
-
+    # Statistics
     probs = []
     for t in xrange(T):
         probs += [prob_files[t]]
