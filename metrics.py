@@ -24,15 +24,11 @@ def do(argv):
     res = 1
     for resultname, referencename in pack:
         result = nib.load(join(segResults_path,resultname)).get_data()
-        print('result name: ', resultname)
-        print('result shape: ', result.shape)
         reference = nib.load(join(references_path,referencename)).get_data()
-        print('reference name: ', referencename)
-        print('reference shape: ',reference.shape)
+
         reference = numpy.expand_dims(reference,axis=3)
         reference = numpy.expand_dims(reference,axis=4)
-        print('after_reference shape: ', reference.shape)
-        #print("Volume difference: ", ravd(result,reference))
+
         print("ASSD: ", mmb.assd(result,reference,voxelspacing=res))
 
         Assd_array = []
