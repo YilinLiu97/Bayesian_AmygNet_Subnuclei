@@ -21,7 +21,7 @@ def do(argv):
     pack = zip(results,references)
 #    print(pack)
 
-    res = 1
+    res = 1 # image-specific variable
     for resultname, referencename in pack:
         result = nib.load(join(segResults_path,resultname)).get_data()
         reference = nib.load(join(references_path,referencename)).get_data()
