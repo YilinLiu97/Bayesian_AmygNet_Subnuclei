@@ -32,6 +32,7 @@ class AmygNet(BaseNet):
             name=name)
 
         self.crop_diff = 16
+        self.dilation_rates = [1,2,4,2,8,2,4,2,1]
         self.conv_features = [30, 30, 40, 40, 40, 40, 50, 50, 50,50]
         self.fc_features = [150, 150]
         self.conv_classification = [num_classes]
@@ -46,130 +47,24 @@ class AmygNet(BaseNet):
         # crop 27x27x27 from 59x59x59
         crop_op = CropLayer(border=self.crop_diff, name='cropping_input')
         normal_path = crop_op(images)
+        dilated_path = images
         print(crop_op)
 
         # dilated pathway
 
-        # dilation rate = 1
-        dilated_block = ConvolutionalLayer(
+        # dilation rate: 1,2,4,2,8,2,4,2,1
+        for rate in self.dilation_rates:
+            dilated_block = ConvolutionalLayer(
                                         n_output_chns=self.layers_dilation1[0],
                                         kernel_size=3,
                                         padding='VALID',
-                                        dilation=1,
+                                        dilation=rate,
                                         w_initializer=self.initializers['w'],
                                         w_regularizer=self.regularizers['w'],
                                         acti_func=self.acti_func,
                                         name='dilated_conv_{}'.format(self.layers_dilation1[0]))
 
-        dilated_path = dilated_block(images, is_training)
-        print(dilated_block)
-
-        # dilation rate = 2
-        dilated_block = ConvolutionalLayer(
-                                n_output_chns=self.layers_dilation2[0],
-                                kernel_size=3,
-                                padding='VALID',
-                                dilation=2,
-                                w_initializer=self.initializers['w'],
-                                w_regularizer=self.regularizers['w'],
-                                acti_func=self.acti_func,
-                                name='dilated_conv_{}'.format(self.layers_dilation2[0]))
-
-        dilated_path = dilated_block(dilated_path, is_training)
-        print(dilated_block)
-
-        #dilation rate = 4
-        dilated_block = ConvolutionalLayer(
-                                n_output_chns=self.layers_dilation4[0],
-                                kernel_size=3,
-                                dilation=4,
-                                padding='VALID',
-                                w_initializer=self.initializers['w'],
-                                w_regularizer=self.regularizers['w'],
-                                acti_func=self.acti_func,
-                                name='dilated_conv_{}'.format(self.layers_dilation4[0]))
-
-        dilated_path = dilated_block(dilated_path, is_training)
-        print(dilated_block)
-
-        #dilation rate = 2
-        dilated_block = ConvolutionalLayer(
-                                n_output_chns=self.layers_dilation2[1],
-                                kernel_size=3,
-                                dilation=2,
-                                padding='VALID',
-                                w_initializer=self.initializers['w'],
-                                w_regularizer=self.regularizers['w'],
-                                acti_func=self.acti_func,
-                                name='dilated_conv_{}'.format(self.layers_dilation2[1]))
-
-        dilated_path = dilated_block(dilated_path, is_training)
-        print(dilated_block)
-
-        #dilation rate = 8
-        dilated_block = ConvolutionalLayer(
-                                n_output_chns=self.layers_dilation8[0],
-                                kernel_size=3,
-                                dilation=8,
-                                padding='VALID',
-                                w_initializer=self.initializers['w'],
-                                acti_func=self.acti_func,
-                                name='dilated_conv_{}'.format(self.layers_dilation8[0]))
-
-        dilated_path= dilated_block(dilated_path, is_training)
-        print(dilated_block)
-
-        #dilation rate = 2
-        dilated_block = ConvolutionalLayer(
-                                n_output_chns=self.layers_dilation2[2],
-                                kernel_size=3,
-                                dilation=2,
-                                padding='VALID',
-                                w_initializer=self.initializers['w'],
-                                w_regularizer=self.regularizers['w'],
-                                acti_func=self.acti_func,
-                                name='dilated_conv_{}'.format(self.layers_dilation2[2]))
-
-        dilated_path = dilated_block(dilated_path, is_training)
-        print(dilated_block)
-        #dilation rate = 4
-        dilated_block = ConvolutionalLayer(
-                                n_output_chns=self.layers_dilation4[1],
-                                kernel_size=3,
-                                dilation=4,
-                                padding='VALID',
-                                w_initializer=self.initializers['w'],
-                                w_regularizer=self.regularizers['w'],
-                                acti_func=self.acti_func,
-                                name='dilated_conv_{}'.format(self.layers_dilation4[1]))
-
-        dilated_path = dilated_block(dilated_path, is_training)
-        print(dilated_block)
-
-        #dilation rate = 2
-        dilated_block = ConvolutionalLayer(
-                                n_output_chns=self.layers_dilation2[3],
-                                kernel_size=3,
-                                dilation=2,
-                                padding='VALID',
-                                w_initializer=self.initializers['w'],
-                                w_regularizer=self.regularizers['w'],
-                                acti_func=self.acti_func,
-                                name='dilated_conv_{}'.format(self.layers_dilation2[3]))
-
-        dilated_path = dilated_block(dilated_path, is_training)
-        
-        #dilation rate = 1
-        dilated_block = ConvolutionalLayer(
-                                     n_output_chns=self.layers_dilation1[1],
-                                        kernel_size=3,
-                                        dilation=1,
-                                        padding='VALID',
-                                        w_initializer=self.initializers['w'],
-                                        w_regularizer=self.regularizers['w'],
-                                        acti_func=self.acti_func,
-                                        name='dilated_conv_{}'.format(self.layers_dilation1[1]))
-        dilated_path = dilated_block(dilated_path, is_training)
+            dilated_path = dilated_block(dilated_path, is_training)
         print(dilated_block)
 
         count_1 = 0
@@ -187,10 +82,6 @@ class AmygNet(BaseNet):
                 acti_func=self.acti_func,
                 name='normal_conv_{}'.format(n_features))
 
-            if count_1 > 4:
-               normal_path = conv_path_1(normal_path, is_training, keep_prob=1)
-#               print('###########################################keep_prob: ',keep_prob)
-            else:
                normal_path = conv_path_1(normal_path, is_training)
             print(conv_path_1)
             
