@@ -59,14 +59,12 @@ def do(argv):
     probs = []
     for t in xrange(T):
         probs += [prob_files[t]]
-    print('Shape(probs): ', np.array(probs).shape)
-    print(0 in np.array(probs))
+
     predictive_mean = np.mean(probs, axis=0) # the label map used as segmentation result
-    print('Shape(predictive_mean): ', np.array(predictive_mean).shape)
-    print(0 in np.array(predictive_mean))
+
     predictive_variance = np.var(probs, axis=0)
 #    predictive_variance = np.apply_along_axis(predictive_entropy, axis=-1, arr=predictive_mean)
-    print('Shape(predictive_variance): ', np.array(predictive_variance).shape)
+
 
     # Generate folders to store the the MC outputs
     BASE_DIR = os.getcwd()
@@ -87,10 +85,10 @@ def do(argv):
     imageTypeToSave_seg = np.dtype(np.int16)
     imageTypeToSave_uncer = np.dtype(np.float32)
     segmentationImage = np.argmax(predictive_mean, axis=-1).astype(np.int16) #get the segmentation output
-    print('Shape(segmentationImage): ', np.array(segmentationImage).shape)
+
     uncertaintyMap = np.mean(predictive_variance, axis=-1) #get the uncertainty estimation
 
-    print('Shape(uncertaintyMap): ', np.array(uncertaintyMap).shape)
+
 
     seg_output = saveImageAsNifti(segmentationImage,nameToSave,imageTypeToSave_seg,image_proxy)
     uncertainty_output = saveImageAsNifti(uncertaintyMap,uncertaintyName,imageTypeToSave_uncer,image_proxy)
