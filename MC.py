@@ -25,7 +25,6 @@ def saveImageAsNifti(imageToSave,
     niiToSave.set_data_dtype(imageType)
     print('imageType: ', imageType)
 
-    niiToSave.header.set_zooms(zooms)
     nib.save(niiToSave, imageName)
 
     print ("... Image succesfully saved in ", imageName)
