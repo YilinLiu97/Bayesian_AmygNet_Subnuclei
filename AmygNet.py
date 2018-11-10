@@ -65,7 +65,7 @@ class AmygNet(BaseNet):
                                         name='dilated_conv_{}'.format(self.layers_dilation1[0]))
 
             dilated_path = dilated_block(dilated_path, is_training)
-        print(dilated_block)
+            print(dilated_block)
 
         count_1 = 0
 
@@ -82,7 +82,7 @@ class AmygNet(BaseNet):
                 acti_func=self.acti_func,
                 name='normal_conv_{}'.format(n_features))
 
-               normal_path = conv_path_1(normal_path, is_training)
+            normal_path = conv_path_1(normal_path, is_training)
             print(conv_path_1)
             
 
