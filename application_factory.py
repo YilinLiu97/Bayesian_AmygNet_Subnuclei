@@ -63,8 +63,6 @@ SUPPORTED_NETWORK = {
         'niftynet.network.unet_2d.UNet2D',
     "AmygNet":
 	'niftynet.network.AmygNet.AmygNet',
-    "dilated_deepmedic":
-        'niftynet.network.dilated_deepmedic.dilated_deepmedic',
 
     # classification
     "resnet": 'niftynet.network.resnet.ResNet',
