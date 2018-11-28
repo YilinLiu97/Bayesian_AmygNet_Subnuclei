@@ -99,4 +99,18 @@ class AmygNet(BaseNet):
 
             output_tensor = conv_fc(output_tensor, is_training, keep_prob=keep_prob)
             print(conv_fc)
+        
+        # classification layer
+        for n_features in self.conv_classification:
+            conv_classification = ConvolutionalLayer(
+                n_output_chns=n_features,
+                kernel_size=1,
+                acti_func=None,
+                w_initializer=self.initializers['w'],
+                w_regularizer=self.regularizers['w'],
+                name='conv_1x1x1_{}'.format(n_features))
+            output_tensor = conv_classification(output_tensor, is_training)
+            print(conv_classification)
+
+        return output_tensor
 
