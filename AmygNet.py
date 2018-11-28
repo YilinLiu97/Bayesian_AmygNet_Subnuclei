@@ -33,14 +33,12 @@ class AmygNet(BaseNet):
 
         self.crop_diff = 16
         self.dilation_rates = [1,2,4,2,8,2,4,2,1]
-        self.conv_features = [30, 30, 40, 40, 40, 40, 50, 50, 50,50]
+        self.conv1_features = [30, 30, 40, 40, 40, 40, 50, 50, 50, 50]
+        self.conv2_features = [30, 30, 40, 40, 40, 40, 50, 50, 50]
         self.fc_features = [150, 150]
         self.conv_classification = [num_classes]
 
-        self.layers_dilation1 = [30, 50]
-        self.layers_dilation2 = [30, 40, 40, 50]
-        self.layers_dilation4 = [40, 50]
-        self.layers_dilation8 = [40]
+
 
     def layer_op(self, images, is_training, keep_prob=0.5, layer_id=-1, **unused_kwargs):
 
@@ -53,9 +51,9 @@ class AmygNet(BaseNet):
         # dilated pathway
 
         # dilation rate: 1,2,4,2,8,2,4,2,1
-        for rate in self.dilation_rates:
+        for n_features, rate in zip(self.conv2_features,self.dilation_rates):
             dilated_block = ConvolutionalLayer(
-                                        n_output_chns=self.layers_dilation1[0],
+                                        n_output_chns=n_features,
                                         kernel_size=3,
                                         padding='VALID',
                                         dilation=rate,
@@ -67,10 +65,8 @@ class AmygNet(BaseNet):
             dilated_path = dilated_block(dilated_path, is_training)
             print(dilated_block)
 
-        count_1 = 0
 
         for n_features in self.conv_features:
-            count_1 = count_1 + 1
 
             # normal pathway convolutions
             conv_path_1 = ConvolutionalLayer(
@@ -99,8 +95,8 @@ class AmygNet(BaseNet):
                 w_initializer=self.initializers['w'],
                 w_regularizer=self.regularizers['w'],
                 name='conv_1x1x1_{}'.format(n_features))
+           
             output_tensor = conv_fc(output_tensor, is_training, keep_prob=keep_prob)
-            print('###########################################keep_prob: ',keep_prob)
             print(conv_fc)
 
         for n_features in self.conv_classification:
