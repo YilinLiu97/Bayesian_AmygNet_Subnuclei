@@ -45,7 +45,7 @@ def predictive_entropy(prob):
 def do(argv):
     Affine_path = '../ISMRM_Dataset'
     Data_path = join(Affine_path,argv[0])
-    outprob_homepath = 'models/dilated_deepmedic'
+    outprob_homepath = 'models/AmygNet'
     foldername = argv[1]
     suffix = ".nii.gz"
     probs_path = join(outprob_homepath,foldername)
