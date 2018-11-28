@@ -1,3 +1,4 @@
+# By Yilin Liu, 2018
 from __future__ import absolute_import, print_function
 
 from niftynet.layer import layer_util
@@ -10,7 +11,7 @@ from niftynet.network.base_net import BaseNet
 
 class AmygNet(BaseNet):
     """
-    implementation 
+    implementation
     """
 
     def __init__(self,
@@ -60,13 +61,14 @@ class AmygNet(BaseNet):
                                         w_initializer=self.initializers['w'],
                                         w_regularizer=self.regularizers['w'],
                                         acti_func=self.acti_func,
-                                        name='dilated_conv_{}'.format(self.layers_dilation1[0]))
+                                        name='dilated_conv_{}'.format(n_features))
 
             dilated_path = dilated_block(dilated_path, is_training)
             print(dilated_block)
+   
+        # normal pathway
 
-
-        for n_features in self.conv_features:
+        for n_features in self.conv1_features:
 
             # normal pathway convolutions
             conv_path_1 = ConvolutionalLayer(
@@ -80,7 +82,6 @@ class AmygNet(BaseNet):
 
             normal_path = conv_path_1(normal_path, is_training)
             print(conv_path_1)
-            
 
 
         # concatenate both pathways
@@ -95,22 +96,7 @@ class AmygNet(BaseNet):
                 w_initializer=self.initializers['w'],
                 w_regularizer=self.regularizers['w'],
                 name='conv_1x1x1_{}'.format(n_features))
-           
+
             output_tensor = conv_fc(output_tensor, is_training, keep_prob=keep_prob)
             print(conv_fc)
 
-        for n_features in self.conv_classification:
-            conv_classification = ConvolutionalLayer(
-                n_output_chns=n_features,
-                kernel_size=1,
-                acti_func=None,
-                w_initializer=self.initializers['w'],
-                w_regularizer=self.regularizers['w'],
-                name='conv_1x1x1_{}'.format(n_features))
-            output_tensor = conv_classification(output_tensor, is_training)
-            print(conv_classification)
-
-        return output_tensor
-
-              
-        
