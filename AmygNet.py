@@ -98,7 +98,7 @@ class AmygNet(BaseNet):
                 name='conv_1x1x1_{}'.format(n_features))
 
             output_tensor = conv_fc(output_tensor, is_training, keep_prob=keep_prob)
-            print('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% dropout rate: ', keep_prob)
+            print('#----------------------------------- dropout rate: ', keep_prob)
             print(conv_fc)
         
         # classification layer
