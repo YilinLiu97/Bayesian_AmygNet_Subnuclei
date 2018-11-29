@@ -63,15 +63,14 @@ SUPPORTED_NETWORK = {
         'niftynet.network.unet_2d.UNet2D',
     "AmygNet":
 	'niftynet.network.AmygNet.AmygNet',
-
-    # classification
-    "resnet": 'niftynet.network.resnet.ResNet',
     "dilated":
 	'niftynet.network.dilated.dilated',
     "path1":
 	'niftynet.network.path1.path1',
-    "ISMRMNet":
-        'niftynet.network.ISMRMNet.ISMRMNet',
+
+    # classification
+    "resnet": 'niftynet.network.resnet.ResNet',
+	
     # autoencoder
     "vae": 'niftynet.network.vae.VAE'
 }
