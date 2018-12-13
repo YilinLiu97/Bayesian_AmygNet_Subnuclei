@@ -6,21 +6,10 @@ from os import path
 from os.path import isfile,join
 import medpy.metric.binary as mmb
 import numpy
-
-"""Print Usage"""
-def usage(errors):
-    if errors == 1:
-        print("** ERROR!!: Some arguments are missing.")
-    else:
-        pass
-    print(" ******** USAGE ******** ")
-    print(" --- argv 1: Folder containing images to measure")
-    print(" --- argv 2: Folder containing ground truths")
-    print(" --- argv 3: Number of classes")
       
 
 def do(argv):
-
+  
     segResults_path = argv[0]
     references_path = argv[1]
     num_classes = argv[2]
