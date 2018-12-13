@@ -7,6 +7,18 @@ from os.path import isfile,join
 import medpy.metric.binary as mmb
 import numpy
 
+"""Print Usage"""
+def usage(errors):
+    if errors == 1:
+        print("** ERROR!!: Some arguments are missing.")
+    else:
+        pass
+    print(" ******** USAGE ******** ")
+    print(" --- argv 1: Folder containing images to measure")
+    print(" --- argv 2: Folder containing ground truths")
+    print(" --- argv 3: Number of classes")
+      
+
 def do(argv):
 
     segResults_path = argv[0]
@@ -18,14 +30,12 @@ def do(argv):
     references = listdir(references_path)
     references.sort(key=lambda f: int(filter(str.isdigit, f)))
 
-    pack = zip(results,references)
-#    print(pack)
-
     res = 1 # image-specific variable
-    for resultname, referencename in pack:
+    for resultname, referencename in zip(results,references):
         result = nib.load(join(segResults_path,resultname)).get_data()
         reference = nib.load(join(references_path,referencename)).get_data()
 
+        # Please adjust this for your own data
         reference = numpy.expand_dims(reference,axis=3)
         reference = numpy.expand_dims(reference,axis=4)
 
