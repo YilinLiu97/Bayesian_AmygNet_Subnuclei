@@ -11,5 +11,5 @@ To do the MC testing,
 1. choose a dropout rate (set the keep_prob to any number other than 1).
 2. python MC_run.sh
 
-Metrics
+Evaluation
 use the metrics.py
