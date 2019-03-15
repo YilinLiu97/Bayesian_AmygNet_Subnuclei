@@ -15,3 +15,5 @@ If do the standard testing + no data augmentation, you can set the dropout rate 
 
 Evaluation
 use the metrics.py
+
+A Pytorch version is comming soon!! >>>
