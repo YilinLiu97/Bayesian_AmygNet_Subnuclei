@@ -33,45 +33,49 @@ class Multi_AmygNet(BaseNet):
             name=name)
 
         self.crop_diff = 16
-        self.dilation_rates = [1,2,4,2,8,2,4,2,1]
-        self.conv1_features = [30, 30, 40, 40, 40, 40, 50, 50, 50]
-        self.conv2_features = [30, 30, 40, 40, 40, 40, 50, 50, 50]
-        self.fc_features = [150, 150]
+        #self.dilation_rates = [1,2,4,2,8,2,4,2,1]
+        self.T1_features = [30, 30, 40, 40, 40, 40, 50, 50, 50, 50]
+        #self.T2_features = [30, 30, 40, 40, 40, 40, 50, 50, 50, 50]
+        #self.fc_features = [150]
         self.conv_classification = [num_classes]
-
+        
+        #self.c-SE = ChannelSELayer()
+        #self.s-SE = SpatialSELayer()
+        #self.cs-SE = ChannelSpatialSELayer()
 
 
     def layer_op(self, images, is_training, keep_prob=0.5, layer_id=-1, **unused_kwargs):
 
         # crop 27x27x27 from 59x59x59
-        crop_op = CropLayer(border=self.crop_diff, name='cropping_input')
-        normal_path = crop_op(images)
-        dilated_path = images
+        #crop_op = CropLayer(border=self.crop_diff, name='cropping_input')
+        T1_path = images
+       # T2_path = crop_op(images)
         print(crop_op)
 
         # T1 pathway
+        for n_features in self.T1_features:
 
-        # dilation rate: 1,2,4,2,8,2,4,2,1
-        for n_features, rate in zip(self.conv2_features,self.dilation_rates):
-            dilated_block = ConvolutionalLayer(
-                                        n_output_chns=n_features,
-                                        kernel_size=3,
-                                        padding='VALID',
-                                        dilation=rate,
-                                        w_initializer=self.initializers['w'],
-                                        w_regularizer=self.regularizers['w'],
-                                        acti_func=self.acti_func,
-                                        name='dilated_conv_{}'.format(n_features))
+            # T1 pathway convolutions
+            T1_path_1 = ConvolutionalLayer(
+                n_output_chns=n_features,
+                kernel_size=3,
+                padding='VALID',
+                w_initializer=self.initializers['w'],
+                w_regularizer=self.regularizers['w'],
+                acti_func=self.acti_func,
+                name='normal_conv_{}'.format(n_features))
+            
+            c-SE = ChannelSELayer()
 
-            dilated_path = dilated_block(dilated_path, is_training)
-            print(dilated_block)
-   
+            T1_path = c-SE(T1_path_1(T1_path, is_training))
+            print(T1_path_1)
+            print(c-SE)
+   '''
         # T2 pathway
+        for n_features in self.conv2_features:
 
-        for n_features in self.conv1_features:
-
-            # normal pathway convolutions
-            conv_path_1 = ConvolutionalLayer(
+            # T2 pathway convolutions
+            T2_path_1 = ConvolutionalLayer(
                 n_output_chns=n_features,
                 kernel_size=3,
                 padding='VALID',
@@ -80,12 +84,14 @@ class Multi_AmygNet(BaseNet):
                 acti_func=self.acti_func,
                 name='normal_conv_{}'.format(n_features))
 
-            normal_path = conv_path_1(normal_path, is_training)
-            print(conv_path_1)
-
+            T2_path = T2_path_1(T2_path, is_training)
+            print(T2_path_1)
+    '''
 
         # concatenate both pathways
-        output_tensor = ElementwiseLayer('CONCAT')(normal_path, dilated_path)
+        #output_tensor = ElementwiseLayer('CONCAT')(T1_path, T2_path)
+        # weighted concatenation - with attention mechanisms
+        #output_tensor = self.c-SE(output_tensor)
 
         # 1x1x1 convolution layer
         for n_features in self.fc_features:
